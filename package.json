@@ -5,7 +5,9 @@
   "type": "module",
   "main": "src/main.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "dev": "nodemon .",
+    "start": "prisma generate && node ."
   },
   "jest": {
     "transform": {

@@ -2,6 +2,7 @@ import express from "express";
 import penggunaController from "../../controllers/pengguna.controller.js";
 import kategori_barangController from "../../controllers/kategori_barang.controller.js";
 import authorizationMiddleware from "../../middlewares/authorization.middleware.js";
+import barangController from "../../controllers/barang.controller.js";
 
 const router = express.Router();
 // pengguna route
@@ -28,5 +29,18 @@ router.get(
   authorizationMiddleware.allRoleApi,
   kategori_barangController.gether
 );
+
+// barang route
+router.post(
+  "/barang",
+  authorizationMiddleware.allRoleApi,
+  barangController.create
+);
+router.put(
+  "/barang",
+  authorizationMiddleware.allRoleApi,
+  barangController.edit
+);
+router.get("/barang", authorizationMiddleware.allRoleApi);
 
 export default router;

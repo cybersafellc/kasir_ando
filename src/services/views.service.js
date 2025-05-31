@@ -111,6 +111,7 @@ async function barang(request) {
             update_at: true,
           },
         },
+        kategori: true,
       },
       skip: result?.page ? (result.page - 1) * result.take : 0,
       take: result?.take ? result.take : 10,
@@ -118,6 +119,7 @@ async function barang(request) {
         update_at: "desc",
       },
     }),
+    kategori_barang: await database.kategoriBarang.findMany(),
     page: result?.page,
     max_page: Math.ceil(count / result?.take),
     user: await database.pengguna.findUnique({

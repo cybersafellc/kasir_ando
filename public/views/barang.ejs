@@ -231,14 +231,13 @@
   <tbody>
     <% barang.data.forEach((kategori) => { %>
       <tr class="unread">
-        <td><%= kategori.nama %></td>
-        <td><%= kategori.pembuat?.nama || '-' %></td>
-        <td><%= kategori.pembuat?.role || '-' %></td>
+        <td><%= kategori.kategori.nama %></td>
+        <td><%= kategori.kode_barang || '-' %></td>
+        <td style="font-weight: bold; color: black;"><%= kategori.nama || '-' %></td>
+        <td>Rp.<%= kategori.harga %></td>
+        <td><%= kategori.jumlah %></td>
         <td>
-          <%= new Date(kategori.created_at).toLocaleString('id-ID', {
-            day: 'numeric', month: 'short', year: 'numeric',
-            hour: '2-digit', minute: '2-digit'
-          }) %>
+          <%= kategori.penanggungJawab.nama %>
         </td>
         <td>
           <%= new Date(kategori.update_at).toLocaleString('id-ID', {
@@ -331,13 +330,13 @@
   const maxPage = parseInt('<%= barang.max_page %>')
   function prev(){
     if(page > 1){
-      window.location.href = `/kategori_barang?page=${page - 1}`
+      window.location.href = `/barang?page=${page - 1}`
 
     }
   }
   function next(){
     if(page < maxPage){
-      window.location.href = `/kategori_barang?page=${page + 1}`
+      window.location.href = `/barang?page=${page + 1}`
     }
   }
 
@@ -347,8 +346,22 @@
       body: `
         <form id="formSubmit" onsubmit="return submitForm(event)">
           <div class="form-group mb-2">
+            <label for="nama">Kategori Barang:</label>
+            <select id="kategori_id" class="form-control mb-2" name="kategori_id">
+              <option value="">Pilih Kategori</option>  
+              <% barang.kategori_barang.forEach(function(kategori) { %>
+                <option value="<%= kategori.id %>"><%= kategori.nama %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group mb-2">
             <label for="nama">Nama:</label>
             <input type="text" id="nama" name="nama" class="form-control" required />
+          </div>
+          <div class="form-group mb-2">
+            <label for="nama">Harga:</label>
+            <input type="number" id="harga" name="harga" class="form-control" required />
           </div>
           <div class="mt-3 text-right">
             <button type="submit" class="btn btn-success">Tambahkan</button>
@@ -437,16 +450,20 @@
   async function submitForm(event) {
     event.preventDefault();
     const nama = event.target.nama.value
+    const kategori_id = event.target.kategori_id.value
+    const harga = event.target.harga.value
     try {
-      if(!nama) throw new Error("Masukkan nama kategori")
-      const response = await fetch("/api/kategori_barang", {
+      if(!nama || !kategori_id || !harga) throw new Error("Masukkan Data Barang !")
+      const response = await fetch("/api/barang", {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          nama: nama
+          kategori_id: kategori_id,
+          nama: nama,
+          harga: harga
         })
       })
       const responseJson = await response.json()
@@ -491,7 +508,7 @@
 
   $("#serach_form").on("submit",async function(event){
     event.preventDefault()
-    window.location.href = `/kategori_barang?q=${event.target.search.value}`
+    window.location.href = `/barang?q=${event.target.search.value}`
   })
 
   function logoutHandler() {

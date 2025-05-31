@@ -1,0 +1,2 @@
+{"level":"error","message":"Cannot set properties of undefined (setting 'user_id')","timestamp":"2025-05-31T17:41:29.315Z"}
+{"level":"error","message":"Expected double-quoted property name in JSON at position 59 (line 4 column 1)","timestamp":"2025-05-31T17:43:16.661Z"}
