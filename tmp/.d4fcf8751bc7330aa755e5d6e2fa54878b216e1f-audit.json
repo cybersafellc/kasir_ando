@@ -1,0 +1,35 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 15
+    },
+    "auditLog": "tmp\\.d4fcf8751bc7330aa755e5d6e2fa54878b216e1f-audit.json",
+    "files": [
+        {
+            "date": 1748346849936,
+            "name": "tmp\\combine-2025-05-27.log",
+            "hash": "88a4290bb4afc761b6bfaf3f2ee59663e9abcfa0e49aeddc9f37fdc0ee727391"
+        },
+        {
+            "date": 1748405270828,
+            "name": "tmp\\combine-2025-05-28.log",
+            "hash": "fd7d18d40dfb03e860b96007c71b0f8a1646e61647e2e3758ca4418ddd259d12"
+        },
+        {
+            "date": 1748491244966,
+            "name": "tmp\\combine-2025-05-29.log",
+            "hash": "ea3e02c88b3199c0c27647d971e46554e584b933643a3e80965bcde8728b7bde"
+        },
+        {
+            "date": 1748581593318,
+            "name": "tmp\\combine-2025-05-30.log",
+            "hash": "742b9f09f00a5ea4fd297fcf0fcdc40878d5a59e3d08dd8788a0401d9b19a6c6"
+        },
+        {
+            "date": 1748694478552,
+            "name": "tmp\\combine-2025-05-31.log",
+            "hash": "115a45bdadceae44d7c54b0d81dac62a87d7d0f2e70d4fa91e1d37d6764d425f"
+        }
+    ],
+    "hashType": "sha256"
+}

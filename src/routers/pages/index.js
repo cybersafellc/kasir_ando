@@ -1,0 +1,23 @@
+import express from "express";
+import viewsController from "../../controllers/views.controller.js";
+import authorizationMiddleware from "../../middlewares/authorization.middleware.js";
+
+const router = express.Router();
+router.get("/daftar", viewsController.daftar);
+router.get("/login", viewsController.login);
+router.get(
+  "/kategori_barang",
+  authorizationMiddleware.allRolePages,
+  viewsController.kategoriBarang
+);
+router.get(
+  "/logout",
+  authorizationMiddleware.allRolePages,
+  viewsController.logout
+);
+router.get(
+  "/barang",
+  authorizationMiddleware.allRolePages,
+  viewsController.barang
+);
+export default router;

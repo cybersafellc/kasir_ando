@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql" // Ganti dengan postgres/sqlite sesuai kebutuhan
+  url      = env("DATABASE_URL")
+}
+
+model Pengguna {
+  @@map("pengguna")
+
+  id       String   @id @db.VarChar(255)
+  username String   @unique @db.VarChar(255)
+  password String   @db.VarChar(255)
+  role     String   @db.VarChar(60)
+  nama     String   @db.VarChar(255)
+  email    String   @unique @db.VarChar(255)
+  phone    String   @db.VarChar(255)
+  created_at DateTime @default(now())
+  update_at DateTime @updatedAt
+
+  kategoriBarang         KategoriBarang[] @relation("KategoriDibuatOleh")
+  barangDibuat           Barang[]         @relation("BarangDibuatOleh")
+  barangPenanggungJawab  Barang[]         @relation("BarangPenanggungJawab")
+  stokMasukDibuat        StokMasuk[]      @relation("StokMasukDibuatOleh")
+  stokKeluarDibuat       StokKeluar[]     @relation("StokKeluarDibuatOleh")
+}
+
+model KategoriBarang {
+  @@map("kategori_barang")
+
+  id         String   @id @db.VarChar(255)
+  nama       String   @db.VarChar(255)
+  dibuat_oleh String   @db.VarChar(255)
+  created_at DateTime @default(now())
+  update_at  DateTime @updatedAt
+
+  pembuat    Pengguna @relation("KategoriDibuatOleh", fields: [dibuat_oleh], references: [id])
+  barang     Barang[]
+}
+
+model Barang {
+  @@map("barang")
+
+  id                          String       @id @db.VarChar(255)
+  kategori_id                 String       @db.VarChar(255)
+  kode_barang                 String   @unique @db.VarChar(255)
+  nama                        String       @db.Text
+  harga                       Int
+  jumlah                      Int
+  dibuat_oleh                 String       @db.VarChar(255)
+  penanggung_jawab_terakhir  String       @db.VarChar(255)
+  created_at                  DateTime @default(now())
+  update_at                   DateTime @updatedAt
+
+  kategori         KategoriBarang @relation(fields: [kategori_id], references: [id])
+  pembuat          Pengguna       @relation("BarangDibuatOleh", fields: [dibuat_oleh], references: [id])
+  penanggungJawab  Pengguna       @relation("BarangPenanggungJawab", fields: [penanggung_jawab_terakhir], references: [id])
+  stokMasuk        StokMasuk[]
+  stokKeluar       StokKeluar[]
+}
+
+model StokMasuk {
+  @@map("stok_masuk")
+
+  id           String    @id @db.VarChar(255)
+  barang_id    String    @db.VarChar(255)
+  jumlah       Int
+  harga_satuan Int
+  dibuat_oleh  String    @db.VarChar(255)
+  created_at   DateTime  @default(now())
+  update_at    DateTime  @updatedAt
+
+  barang       Barang    @relation(fields: [barang_id], references: [id])
+  pembuat      Pengguna  @relation("StokMasukDibuatOleh", fields: [dibuat_oleh], references: [id])
+}
+
+model StokKeluar {
+  @@map("stok_keluar")
+
+  id           String    @id @db.VarChar(255)
+  barang_id    String    @db.VarChar(255)
+  jumlah       Int
+  harga_satuan Int
+  dibuat_oleh  String    @db.VarChar(255)
+  created_at   DateTime  @default(now())
+  update_at    DateTime  @updatedAt
+
+  barang       Barang    @relation(fields: [barang_id], references: [id])
+  pembuat      Pengguna  @relation("StokKeluarDibuatOleh", fields: [dibuat_oleh], references: [id])
+}
