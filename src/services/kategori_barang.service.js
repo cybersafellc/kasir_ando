@@ -49,6 +49,9 @@ async function gether(request) {
         },
       },
     },
+    orderBy: {
+      nama: "asc",
+    },
   });
   return new Response(
     200,

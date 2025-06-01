@@ -17,4 +17,12 @@ function generateItemCode() {
   return digits.join("");
 }
 
-export { generateItemCode };
+function formatRupiah(angka) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(angka);
+}
+
+export { generateItemCode, formatRupiah };

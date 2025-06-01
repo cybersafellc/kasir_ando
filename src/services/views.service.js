@@ -1,4 +1,5 @@
 import { database } from "../app/database.js";
+import { formatRupiah } from "../utils/etc.js";
 import { Response } from "../utils/response.template.js";
 import { validation } from "../validations/validation.js";
 import viewValidation from "../validations/view.validation.js";
@@ -79,7 +80,7 @@ async function barang(request) {
       },
     },
   });
-  const barang = {
+  let barang = {
     data: await database.barang.findMany({
       where: {
         nama: {
@@ -119,7 +120,11 @@ async function barang(request) {
         update_at: "desc",
       },
     }),
-    kategori_barang: await database.kategoriBarang.findMany(),
+    kategori_barang: await database.kategoriBarang.findMany({
+      orderBy: {
+        nama: "asc",
+      },
+    }),
     page: result?.page,
     max_page: Math.ceil(count / result?.take),
     user: await database.pengguna.findUnique({
@@ -128,6 +133,10 @@ async function barang(request) {
       },
     }),
   };
+  barang.data = barang.data.map(function (data) {
+    data.harga = formatRupiah(data.harga);
+    return data;
+  });
   return new Response(200, "success response", { barang }, "barang", false);
 }
 

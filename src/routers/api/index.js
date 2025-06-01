@@ -41,6 +41,15 @@ router.put(
   authorizationMiddleware.allRoleApi,
   barangController.edit
 );
-router.get("/barang", authorizationMiddleware.allRoleApi);
+router.get(
+  "/barang",
+  authorizationMiddleware.allRoleApi,
+  barangController.gether
+);
+router.delete(
+  "/barang",
+  authorizationMiddleware.allRoleApi,
+  barangController.hapus
+);
 
 export default router;
