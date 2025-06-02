@@ -62,4 +62,21 @@ async function barang(req, res, next) {
   }
 }
 
-export default { daftar, login, kategoriBarang, logout, barang };
+async function barangMasuk(req, res, next) {
+  try {
+    const data = {
+      page: req.query.page <= 0 ? 1 : req.query.page,
+      take: req.query.take < 10 ? 10 : req.query.take,
+      q: req.query.q || undefined,
+      id: req.id,
+    };
+    data.page = data?.page ? data.page : 1;
+    data.take = data?.take ? data.take : 10;
+    const response = await viewsService.barangMasuk(data);
+    res.status(response.status).render(response.refrence, response.data);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default { daftar, login, kategoriBarang, logout, barang, barangMasuk };

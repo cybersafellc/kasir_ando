@@ -91,6 +91,14 @@
             <span class="pc-mtext">Barang</span>
           </a>
         </li>
+           <li class="pc-item">
+          <a href="/barang/masuk" class="pc-link">
+            <span class="pc-micon">
+              <i data-feather="package"></i>
+            </span>
+            <span class="pc-mtext">Barang Masuk</span>
+          </a>
+        </li>
       </ul>
     </div>
   </div>
@@ -218,12 +226,13 @@
                 <table class="table table-hover">
   <thead>
     <tr>
-      <th>Kategori</th>
-      <th>Kode Barang</th>
       <th>Nama Barang</th>
+      <th>Kode Barang</th>
+      <th>Kategori</th>
+      
       <th>Harga</th>
-      <th>Jumlah</th>
-      <th>Penanggung Jawab Terakhir</th>
+      <th>Stok</th>
+      <th>Interaksi Teakhir</th>
       <th>Diupdate Pada</th>
       <th>Aksi</th>
     </tr>
@@ -231,10 +240,11 @@
   <tbody>
     <% barang.data.forEach((kategori) => { %>
       <tr class="unread">
-        <td><%= kategori.kategori.nama %></td>
-        <td><%= kategori.kode_barang || '-' %></td>
         <td style="font-weight: bold; color: black;"><%= kategori.nama || '-' %></td>
-        <td>Rp.<%= kategori.harga %></td>
+        <td><%= kategori.kode_barang || '-' %></td>
+        <td><%= kategori.kategori.nama %></td>
+        
+        <td><%= kategori.harga %></td>
         <td><%= kategori.jumlah %></td>
         <td>
           <%= kategori.penanggungJawab.nama %>
@@ -374,7 +384,17 @@
 
   async function editDIalog(id) {
     try {
-      const response = await fetch("/api/kategori_barang?id="+id, {
+      const kategori = await fetch("/api/kategori_barang", {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+      })
+      const responseKategori = await kategori.json()
+      console.log(responseKategori)
+      if(responseKategori.error) throw new Error(responseKategori.message)
+      const response = await fetch("/api/barang?id="+id, {
         method: "GET",
         headers: {
           "Accept": "application/json",
@@ -382,15 +402,31 @@
         },
       })
       const responseJson = await response.json()
+      console.log(responseJson)
       if(responseJson.error) throw new Error(responseJson.message)
       xdialog.open({
-      title: 'Edit Kategori',
+      title: 'Edit Barang',
       body: `
         <form id="formSubmit" onsubmit="return submitFormEdit(event)">
           <input class="hidden" id="pancing" value="${id}"></input>
           <div class="form-group mb-2">
+            <label for="nama">Kategori Barang:</label>
+            <select class="form-control" id="kategori_id">
+              <option value="${responseJson.data.kategori.id}">${responseJson.data.kategori.nama}</option>
+               ${
+            responseKategori.data
+              .map(data => `<option value="${data.id}">${data.nama}</option>`)
+              .join('')
+            }
+            </select>
+          </div>
+          <div class="form-group mb-2">
             <label for="nama">Nama:</label>
-            <input type="text" id="nama_EDIT" name="nama" class="form-control" required value="${responseJson.data.nama}" />
+            <input type="text" id="nama" name="nama" class="form-control" required value="${responseJson.data.nama}" />
+          </div>
+          <div class="form-group mb-2">
+            <label for="nama">Harga:</label>
+            <input type="text" id="harga" name="harga" class="form-control" required value="${responseJson.data.harga}" />
           </div>
           <div class="mt-3 text-right">
             <button type="submit" class="btn btn-success">Simpan</button>
@@ -406,7 +442,7 @@
 
     async function deleteDIalog(id) {
     try {
-      const response = await fetch("/api/kategori_barang?id="+id, {
+      const response = await fetch("/api/barang?id="+id, {
         method: "GET",
         headers: {
           "Accept": "application/json",
@@ -418,7 +454,7 @@
        xdialog.confirm("Apakah anda yakin untuk menghapus " + responseJson.data.nama, "Konfirmasi Hapus", {
         onok: async function(){
           try {
-            const response = await fetch("/api/kategori_barang", {
+            const response = await fetch("/api/barang", {
               method: "delete",
               headers: {
                 Accept: "application/json",
@@ -480,18 +516,23 @@
 
     async function submitFormEdit(event) {
     event.preventDefault();
-    const nama = event.target.nama_EDIT.value
+    const nama = event.target.nama.value
+    const id = event.target.pancing.value
+    const harga = event.target.harga.value
+    const kategori_id = event.target.kategori_id.value
     try {
-      if(!nama) throw new Error("Masukkan nama kategori")
-      const response = await fetch("/api/kategori_barang", {
+      if(!nama || !id || !harga || !kategori_id) throw new Error("Masukkan data edit lengkap")
+      const response = await fetch("/api/barang", {
         method: "PUT",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          nama: nama,
-          id: event.target.pancing.value
+          "id": id,
+          "nama": nama,
+          "harga": harga,
+          "kategori_id": kategori_id
         })
       })
       const responseJson = await response.json()

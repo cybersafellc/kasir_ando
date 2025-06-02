@@ -45,13 +45,20 @@ async function create(request) {
 
 async function edit(request) {
   const result = await validation(barangValidation.edit, request);
+  if (result.kategori_id) {
+    const count = await database.kategoriBarang.count({
+      where: {
+        id: result.kategori_id,
+      },
+    });
+    if (!count)
+      throw new ApiError(400, "kategori id yang anda berikan tidak valid");
+  }
   const count = await database.barang.count({
     where: {
       id: result.id,
     },
   });
-  console.log(result);
-  console.log(count);
   if (!count)
     throw new ApiError(400, "id barang yang anda masukkan tidak valid");
   const responseUpdate = await database.barang.update({
@@ -59,6 +66,7 @@ async function edit(request) {
       nama: result.nama,
       harga: result.harga,
       penanggung_jawab_terakhir: result.user_id,
+      kategori_id: result.kategori_id,
     },
     where: {
       id: result.id,
@@ -67,4 +75,104 @@ async function edit(request) {
   return new Response(200, "berhasil mengupdate", responseUpdate, null, false);
 }
 
-export default { create, edit };
+async function gether(request) {
+  const result = await validation(barangValidation.gether, request);
+  const barang = await database.barang.findMany({
+    where: {
+      nama: {
+        contains: result.q || undefined,
+      },
+    },
+    include: {
+      pembuat: {
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          nama: true,
+          email: true,
+          phone: true,
+          created_at: true,
+          update_at: true,
+        },
+      },
+      penanggungJawab: {
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          nama: true,
+          email: true,
+          phone: true,
+          created_at: true,
+          update_at: true,
+        },
+      },
+    },
+  });
+  return new Response(200, "berhasil mendapatkan barang", barang, null, false);
+}
+
+async function getById(request) {
+  const result = await validation(barangValidation.getById, request);
+  const data = await database.barang.findUnique({
+    where: {
+      id: result.id,
+    },
+    include: {
+      pembuat: {
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          nama: true,
+          email: true,
+          phone: true,
+          created_at: true,
+          update_at: true,
+        },
+      },
+      penanggungJawab: {
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          nama: true,
+          email: true,
+          phone: true,
+          created_at: true,
+          update_at: true,
+        },
+      },
+      kategori: true,
+    },
+  });
+  if (!data)
+    throw new ApiError(400, "barang dengan id yang anda masukkan tidak ada");
+  return new Response(
+    200,
+    "berhasil mendapatkan barang dengan id yang anda berikan",
+    data,
+    null,
+    false
+  );
+}
+
+async function hapus(request) {
+  const result = await validation(barangValidation.hapus, request);
+  const count = await database.barang.count({
+    where: {
+      id: result.id,
+    },
+  });
+  if (!count)
+    throw new ApiError(400, "barang id yang kamu berikan tidak valid");
+  const responseDelete = await database.barang.delete({
+    where: {
+      id: result.id,
+    },
+  });
+  return new Response(200, "berhasil menghapus", responseDelete, null, false);
+}
+
+export default { create, edit, gether, getById, hapus };
