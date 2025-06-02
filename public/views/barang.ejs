@@ -91,6 +91,14 @@
             <span class="pc-mtext">Barang</span>
           </a>
         </li>
+           <li class="pc-item">
+          <a href="/barang/masuk" class="pc-link">
+            <span class="pc-micon">
+              <i data-feather="package"></i>
+            </span>
+            <span class="pc-mtext">Barang Masuk</span>
+          </a>
+        </li>
       </ul>
     </div>
   </div>
@@ -223,7 +231,7 @@
       <th>Kategori</th>
       
       <th>Harga</th>
-      <th>Jumlah</th>
+      <th>Stok</th>
       <th>Interaksi Teakhir</th>
       <th>Diupdate Pada</th>
       <th>Aksi</th>
@@ -397,7 +405,7 @@
       console.log(responseJson)
       if(responseJson.error) throw new Error(responseJson.message)
       xdialog.open({
-      title: 'Edit Kategori',
+      title: 'Edit Barang',
       body: `
         <form id="formSubmit" onsubmit="return submitFormEdit(event)">
           <input class="hidden" id="pancing" value="${id}"></input>

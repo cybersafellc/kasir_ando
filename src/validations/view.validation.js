@@ -14,4 +14,11 @@ const barang = Joi.object({
   id: Joi.string().required(),
 }).optional();
 
-export default { kategoriBarang, barang };
+const barangMasuk = Joi.object({
+  q: Joi.string().empty("").optional(),
+  page: Joi.number().empty("").optional(),
+  take: Joi.number().empty("").optional(),
+  id: Joi.string().required(),
+}).optional();
+
+export default { kategoriBarang, barang, barangMasuk };

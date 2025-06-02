@@ -20,4 +20,9 @@ router.get(
   authorizationMiddleware.allRolePages,
   viewsController.barang
 );
+router.get(
+  "/barang/masuk",
+  authorizationMiddleware.allRolePages,
+  viewsController.barangMasuk
+);
 export default router;
