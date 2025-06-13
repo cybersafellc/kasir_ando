@@ -79,4 +79,55 @@ async function barangMasuk(req, res, next) {
   }
 }
 
-export default { daftar, login, kategoriBarang, logout, barang, barangMasuk };
+async function otpVerification(req, res, next) {
+  try {
+    const data = {
+      id: await req.id,
+    };
+    const response = await viewsService.otpVerification(data);
+    res.status(response.status).render(response.refrence, response.data);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function home(req, res, next) {
+  try {
+    const data = {
+      id: await req.id,
+    };
+    const response = await viewsService.home(data);
+    res.status(response.status).render(response.refrence, response.data);
+  } catch (error) {
+    home(error);
+  }
+}
+
+async function pengguna(req, res, next) {
+  try {
+    const data = {
+      page: req.query.page <= 0 ? 1 : req.query.page,
+      take: req.query.take < 10 ? 10 : req.query.take,
+      q: req.query.q || undefined,
+      id: req.id,
+    };
+    data.page = data?.page ? data.page : 1;
+    data.take = data?.take ? data.take : 10;
+    const response = await viewsService.pengguna(data);
+    res.status(response.status).render(response.refrence, response.data);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default {
+  daftar,
+  login,
+  kategoriBarang,
+  logout,
+  barang,
+  barangMasuk,
+  otpVerification,
+  home,
+  pengguna,
+};

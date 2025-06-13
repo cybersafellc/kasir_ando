@@ -87,4 +87,53 @@ async function adminRolePages(req, res, next) {
   }
 }
 
-export default { allRoleApi, allRolePages, adminRoleApi, adminRolePages };
+async function token2FAauthPages(req, res, next) {
+  try {
+    const token_2fa =
+      (await req.headers["authorization"]?.split(" ")[1]) ||
+      req.cookies["token_2fa"];
+    const decode = await Jwt.verify(
+      token_2fa,
+      process.env.TWOFA_SECRET,
+      function (err, decode) {
+        return decode;
+      }
+    );
+    if (!decode) throw new PageError(400, "Expired Session !");
+    req.id = await decode.id;
+    req.role = await decode.role;
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function token2FAauthAPI(req, res, next) {
+  try {
+    const token_2fa =
+      (await req.headers["authorization"]?.split(" ")[1]) ||
+      req.cookies["token_2fa"];
+    const decode = await Jwt.verify(
+      token_2fa,
+      process.env.TWOFA_SECRET,
+      function (err, decode) {
+        return decode;
+      }
+    );
+    if (!decode) throw new ApiError(400, "Session Expired !");
+    req.id = await decode.id;
+    req.role = await decode.role;
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default {
+  allRoleApi,
+  allRolePages,
+  adminRoleApi,
+  adminRolePages,
+  token2FAauthPages,
+  token2FAauthAPI,
+};

@@ -15,4 +15,9 @@ const auth = Joi.object({
   password: Joi.string().required(),
 }).required();
 
-export default { create, auth };
+const otpVerification = Joi.object({
+  id: Joi.string().required(),
+  otp: Joi.string().required(),
+}).required();
+
+export default { create, auth, otpVerification };

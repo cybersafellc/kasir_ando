@@ -91,7 +91,7 @@
             <span class="pc-mtext">Barang</span>
           </a>
         </li>
-        <li class="pc-item">
+           <li class="pc-item">
           <a href="/barang/masuk" class="pc-link">
             <span class="pc-micon">
               <i data-feather="package"></i>
@@ -99,7 +99,7 @@
             <span class="pc-mtext">Barang Masuk</span>
           </a>
         </li>
-        <% if(barangMasuk.user.role == "admin"){%>
+        <% if(penggunas.user.role == "admin"){%>
         
            <li class="pc-item">
           <a href="/pengguna" class="pc-link">
@@ -110,6 +110,7 @@
           </a>
         </li>
         <%} %>
+        
       </ul>
     </div>
   </div>
@@ -179,8 +180,8 @@
               <img src="../assets/images/user/avatar-2.jpg" alt="user-image" class="w-10 rounded-full" />
             </div>
             <div class="grow ms-3">
-              <h6 class="mb-1 text-white"><%= barangMasuk.user.nama %> 🖖</h6>
-              <span class="text-white"><%= barangMasuk.user.email %></span>
+              <h6 class="mb-1 text-white"><%= penggunas.user.nama %> 🖖</h6>
+              <span class="text-white"><%= penggunas.user.email %></span>
             </div>
           </div>
         </div>
@@ -212,11 +213,11 @@
       <div class="page-header">
         <div class="page-block">
           <div class="page-header-title">
-            <h5 class="mb-0 font-medium">Stok Masuk</h5>
+            <h5 class="mb-0 font-medium">Pengguna</h5>
           </div>
           <ul class="breadcrumb">
             <li class="breadcrumb-item"><a href="javascript: void(0)">Navigation</a></li>
-            <li class="breadcrumb-item" aria-current="page">Stok Masuk</li>
+            <li class="breadcrumb-item" aria-current="page">Pengguna</li>
           </ul>
         </div>
       </div>
@@ -230,61 +231,49 @@
         <div class="col-span-12">
           <div class="card">
             <div class="card-header flex justify-between items-center">
-              <h5>Stok Masuk</h5>
-                <button class="btn btn-success" onclick="openDialogForm()">Input Stok Masuk</button>
+              <h5>Pengguna</h5>
+                <button class="btn btn-success" onclick="openDialogForm()">Tambahkan Pengguna</button>
             </div>
             <div class="card-body">
                 <table class="table table-hover">
   <thead>
     <tr>
-      <th>Nama Barang</th>
-      <th>Kode Barang</th>
-      <th>Jumlah</th>
-      <th>Harga Satuan</th>
-      
-      <th>Interaksi Teakhir</th>
-      <th>Diupdate Pada</th>
-      <th>Aksi</th>
+      <th>Nama</th>
+      <th>Username</th>
+      <th>Role</th> 
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Dibuat Pada</th>
     </tr>
   </thead>
   <tbody>
-    <% barangMasuk.data.forEach((kategori) => { %>
+    <% penggunas.data.forEach((kategori) => { %>
       <tr class="unread">
-        <td style="font-weight: bold; color: black;"><%= kategori.barang.nama || '-' %></td>
-        <td><%= kategori.barang.kode_barang || '-' %></td>
-    
-        
-        
-        
-        <td><%= kategori.jumlah %></td>
-        <td><%= kategori.harga_satuan %></td>
-        <td>
-          <%= kategori.pembuat.nama %>
-        </td>
+        <td style="font-weight: bold; color: black;"><%= kategori.nama || '-' %></td>
+        <td><%= kategori.username || '-' %></td>
+        <td><%= kategori.role || '-' %></td>
+        <td><%= kategori.email || '-' %></td>
+        <td><%= kategori.phone || '-' %></td>
         <td>
           <%= new Date(kategori.update_at).toLocaleString('id-ID', {
             day: 'numeric', month: 'short', year: 'numeric',
             hour: '2-digit', minute: '2-digit'
           }) %>
         </td>
-        <td>
-        
-          <a href="#" onclick="deleteDIalog('<%= kategori.id %>')" class="badge bg-theme-bg-2 text-white text-[12px] mx-1">Delete</a>
-        </td>
       </tr>
     <% }) %>
   </tbody>
 </table>
 <div class="flex justify-between items-center">
-  <% if (barangMasuk.page > 1) { %>
+  <% if (penggunas.page > 1) { %>
     <button class="border p-2" onclick="prev()">Prev</button>
   <% } else { %>
     <span></span> <!-- Placeholder agar tombol center -->
   <% } %>
 
-  <span>Halaman <%= barangMasuk.page %> dari <%= barangMasuk.max_page %></span>
+  <span>Halaman <%= penggunas.page %> dari <%= penggunas.max_page %></span>
 
-  <% if (barangMasuk.page < barangMasuk.max_page) { %>
+  <% if ( penggunas.page < penggunas.max_page) { %>
     <button class="border p-2" onclick="next()">Next</button>
   <% } else { %>
     <span></span> <!-- Placeholder agar tombol center -->
@@ -347,46 +336,76 @@
           },
         ],
       });
-  const page = parseInt('<%= barangMasuk.page  %>')
-  const maxPage = parseInt('<%= barangMasuk.max_page %>')
+  const page = parseInt('<%= penggunas.page  %>')
+  const maxPage = parseInt('<%= penggunas.max_page %>')
   function prev(){
     if(page > 1){
-      window.location.href = `/barang/masuk?page=${page - 1}`
+      window.location.href = `/pengguna?page=${page - 1}`
 
     }
   }
   function next(){
     if(page < maxPage){
-      window.location.href = `/barang/masuk?page=${page + 1}`
+      window.location.href = `/pengguna?page=${page + 1}`
     }
   }
 
   function openDialogForm() {
     xdialog.open({
-      title: 'Input Stok Masuk',
+      title: 'Tambahkan Pengguna',
       body: `
         <form id="formSubmit" onsubmit="return submitForm(event)">
-          <div class="form-group mb-2">
-            <label for="nama">Barang:</label>
-            <select name="barang" id="barang" class="form-control">
-                <option>Pilih Barang</option>
-            <% barangMasuk.barang.forEach(function(barang) { %>
-                <option value="<%= barang.id %>"><%= barang.nama %> - <%= barang.kode_barang %></option>
-            <% }); %>
+            <div class="form-group mb-2">
+            <label for="password">Role:</label>
+            <select id="role" name="role" class="form-control">
+                <option>Pilih Role</option>    
+                <option value="user">User</option>    
+                <option value="admin">Admin</option>    
             </select>
           </div>
           <div class="form-group mb-2">
-            <label for="nama">Jumlah:</label>
-            <input type="number" id="jumlah" name="jumlah" class="form-control" required />
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" class="form-control" required />
           </div>
           <div class="form-group mb-2">
-            <label for="nama">Harga Satuan:</label>
-            <input type="number" id="harga_satuan" name="harga_satuan" class="form-control" required />
+            <label for="password">Password:</label>
+            <input type="text" id="password" name="password" class="form-control" required />
+          </div>
+          <div class="form-group mb-2">
+            <label for="nama">Nama:</label>
+            <input type="text" id="nama" name="nama" class="form-control" required />
+          </div>
+          <div class="form-group mb-2">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" class="form-control" required />
+          </div>
+          <div class="form-group mb-2">
+            <label for="phone">Phone:</label>
+            <input type="phone" id="phone" name="phone" class="form-control" required />
+          </div>
+          <div class="form-group mb-2 hidden">
+            <label for="secret">secret:</label>
+            <input type="secret" id="secret" name="secret" value="abangjago" class="form-control" required />
           </div>
           <div class="mt-3 text-right">
-            <button type="submit" class="btn btn-success">Simpan</button>
+            <button type="submit" class="btn btn-success">Tambahkan</button>
           </div>
         </form>
+      `,
+      buttons: [] // Hapus tombol OK/CANCEL default
+    });
+  }
+
+  function showBarcode(nama_barang, kode_barang){
+      xdialog.open({
+      title: `Barcode ${nama_barang}`,
+      body: `
+        <div>
+          <img src="/barcode/${kode_barang}.png" />  
+        </div>
+        <div class="flex justify-center items-center pt-5">
+          <a href="/barcode/${kode_barang}.png" class="btn btn-success">Download</a>  
+        </div>
       `,
       buttons: [] // Hapus tombol OK/CANCEL default
     });
@@ -415,7 +434,7 @@
       console.log(responseJson)
       if(responseJson.error) throw new Error(responseJson.message)
       xdialog.open({
-      title: 'Edit Kategori',
+      title: 'Edit Barang',
       body: `
         <form id="formSubmit" onsubmit="return submitFormEdit(event)">
           <input class="hidden" id="pancing" value="${id}"></input>
@@ -452,10 +471,19 @@
 
     async function deleteDIalog(id) {
     try {
-       xdialog.confirm("Apakah anda yakin untuk menghapus ", "Konfirmasi Hapus", {
+      const response = await fetch("/api/barang?id="+id, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+      })
+      const responseJson = await response.json()
+      if(responseJson.error) throw new Error(responseJson.message)
+       xdialog.confirm("Apakah anda yakin untuk menghapus " + responseJson.data.nama, "Konfirmasi Hapus", {
         onok: async function(){
           try {
-            const response = await fetch("/api/stok_masuk", {
+            const response = await fetch("/api/barang", {
               method: "delete",
               headers: {
                 Accept: "application/json",
@@ -484,23 +512,31 @@
 
 
 
-  async function submitForm(event) {
+  async function submitForm(e) {
     event.preventDefault();
-    const barang = event.target.barang.value
-    const jumlah = event.target.jumlah.value
-    const harga_satuan = event.target.harga_satuan.value
+    const role = e.target.role.value
+    const username = e.target.username.value
+    const password = e.target.password.value
+    const nama = e.target.nama.value
+    const email = e.target.email.value
+    const phone = e.target.phone.value
+    const secret = e.target.secret.value
     try {
-      if(!barang || !jumlah || !harga_satuan) throw new Error("Masukkan Data Barang !")
-      const response = await fetch("/api/stok_masuk", {
+      if(!role || !username || !password || !nama || !email || !phone || !secret) throw new Error("Masukkan Data Pengguna !")
+      const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          barang_id: barang,
-          jumlah: jumlah,
-          harga_satuan: harga_satuan
+            username: username,
+            password: password,
+            role: role,
+            nama: nama,
+            email: email,
+            phone: phone,
+            secret: secret,
         })
       })
       const responseJson = await response.json()
@@ -550,7 +586,7 @@
 
   $("#serach_form").on("submit",async function(event){
     event.preventDefault()
-    window.location.href = `/barang/masuk?q=${event.target.search.value}`
+    window.location.href = `/pengguna?q=${event.target.search.value}`
   })
 
   function logoutHandler() {

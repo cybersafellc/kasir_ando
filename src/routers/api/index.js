@@ -9,6 +9,11 @@ const router = express.Router();
 // pengguna route
 router.post("/users", penggunaController.create);
 router.post("/users/auth", penggunaController.auth);
+router.post(
+  "/users/otp",
+  authorizationMiddleware.token2FAauthAPI,
+  penggunaController.otpVerification
+);
 // kategori barang route
 router.post(
   "/kategori_barang",

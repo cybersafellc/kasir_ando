@@ -21,4 +21,26 @@ const barangMasuk = Joi.object({
   id: Joi.string().required(),
 }).optional();
 
-export default { kategoriBarang, barang, barangMasuk };
+const otpVerification = Joi.object({
+  id: Joi.string().required(),
+}).required();
+
+const home = Joi.object({
+  id: Joi.string().required(),
+}).required();
+
+const pengguna = Joi.object({
+  q: Joi.string().empty("").optional(),
+  page: Joi.number().empty("").optional(),
+  take: Joi.number().empty("").optional(),
+  id: Joi.string().required(),
+}).optional();
+
+export default {
+  kategoriBarang,
+  barang,
+  barangMasuk,
+  otpVerification,
+  home,
+  pengguna,
+};

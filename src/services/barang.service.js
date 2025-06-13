@@ -4,6 +4,10 @@ import { database } from "../app/database.js";
 import { ApiError } from "../errors/response.error.js";
 import { Response } from "../utils/response.template.js";
 import { generateItemCode } from "../utils/etc.js";
+import bwipjs from "bwip-js";
+import { logger } from "../app/logging.js";
+import fs from "fs";
+import path from "path";
 
 async function create(request) {
   console.log(request);
@@ -22,11 +26,12 @@ async function create(request) {
     },
   });
   if (count) throw new ApiError(400, "nama barang sudah ada !");
+  result.kode_barang = generateItemCode();
   const responseCreate = await database.barang.create({
     data: {
       id: crypto.randomUUID(),
       kategori_id: result.kategori_id,
-      kode_barang: generateItemCode(),
+      kode_barang: result.kode_barang,
       nama: result.nama,
       harga: result.harga,
       jumlah: 0,
@@ -34,6 +39,23 @@ async function create(request) {
       penanggung_jawab_terakhir: result.user_id,
     },
   });
+  bwipjs.toBuffer(
+    {
+      bcid: "upca",
+      text: result.kode_barang, // Harus 12 digit
+      scale: 3,
+      height: 10,
+      includetext: true,
+    },
+    function (err, png) {
+      if (err) return logger.error(err.message);
+      fs.writeFileSync(
+        path.join(`public/assets/barcode/${result.kode_barang}.png`),
+        png
+      );
+      logger.info("berhasil membuat barcode");
+    }
+  );
   return new Response(
     200,
     "berhasil menambahkan barang",

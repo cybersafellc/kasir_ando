@@ -10,7 +10,7 @@
   <!-- [Head] start -->
 
   <head>
-    <title>Login | <%= project_name %></title>
+    <title>OTP | Kasir APP</title>
     <!-- [Meta] -->
     <meta charset="utf-8" />
     <meta
@@ -107,56 +107,28 @@
                         class="mx-auto auth-logo"
                     /></a>
                   </div>
-                  <h4 class="text-center font-medium mb-4">
-                    Login pelangganshop.com Inventory & Kasir
-                  </h4>
+                  <h4 class="text-center font-medium mb-4">OTP Verification</h4>
+                  <p class="mb-2">
+                    Untuk masuk ke sistem silahkan masukkan OTP yang telah kami
+                    kirimkan ke email anda.
+                  </p>
                   <div class="mb-3">
                     <input
-                      type="text"
+                      type="number"
                       class="form-control"
-                      id="username"
-                      placeholder="Username"
+                      id="otp"
+                      placeholder="XXXXXX"
+                      maxlength="6"
                     />
                   </div>
-                  <div class="mb-4">
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="password"
-                      placeholder="Password"
-                    />
-                  </div>
-                  <div class="flex mt-1 justify-between items-center flex-wrap">
-                    <div class="form-check">
-                      <input
-                        class="form-check-input input-primary"
-                        type="checkbox"
-                        id="customCheckc1"
-                        checked=""
-                      />
-                      <label
-                        class="form-check-label text-muted"
-                        for="customCheckc1"
-                        >Remember me?</label
-                      >
-                    </div>
-                    <h6 class="font-normal text-primary-500 mb-0 hidden">
-                      <a href="#"> Forgot Password? </a>
-                    </h6>
-                  </div>
+
                   <div class="mt-4 text-center">
                     <button
                       type="submit"
                       class="btn btn-primary mx-auto shadow-2xl"
                     >
-                      Login
+                      Verification
                     </button>
-                  </div>
-                  <div class="flex justify-between items-end flex-wrap mt-4">
-                    <h6 class="font-medium mb-0">Don't have an Account?</h6>
-                    <a href="/daftar" class="text-primary-500"
-                      >Create Account</a
-                    >
                   </div>
                 </div>
               </div>
@@ -199,18 +171,17 @@
       form.on("submit", async function (e) {
         try {
           e.preventDefault();
-          if (!e.target.username.value || !e.target.password.value) {
-            throw new Error("Silahkan Masukkan Username dan Password !");
+          if (!e.target.otp.value) {
+            throw new Error("Silahkan Masukkan OTP!");
           }
-          const response = await fetch("/api/users/auth", {
+          const response = await fetch("/api/users/otp", {
             method: "POST",
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              username: e.target.username.value,
-              password: e.target.password.value,
+              otp: e.target.otp.value,
             }),
           });
           const responseJson = await response.json();
@@ -219,7 +190,7 @@
           }
           notification.success(responseJson.message);
           setTimeout(() => {
-            window.location.href = "/otp/verification";
+            window.location.href = "/home";
           }, 3000);
         } catch (error) {
           notification.error(error.message);
