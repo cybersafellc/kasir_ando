@@ -17,6 +17,7 @@ model Pengguna {
   nama     String   @db.VarChar(255)
   email    String   @unique @db.VarChar(255)
   phone    String   @db.VarChar(255)
+  otp      String?  @db.VarChar(6)
   created_at DateTime @default(now())
   update_at DateTime @updatedAt
 

@@ -99,6 +99,17 @@
             <span class="pc-mtext">Barang Masuk</span>
           </a>
         </li>
+        <% if(barang.user.role == "admin"){%>
+        
+           <li class="pc-item">
+          <a href="/pengguna" class="pc-link">
+            <span class="pc-micon">
+              <i data-feather="user"></i>
+            </span>
+            <span class="pc-mtext">Pengguna</span>
+          </a>
+        </li>
+        <%} %>
       </ul>
     </div>
   </div>
@@ -258,7 +269,9 @@
         <td>
           
           <a href="#" onclick="editDIalog('<%= kategori.id %>')" class="badge bg-theme-bg-1 text-white text-[12px]">Edit</a>
-          <a href="#" onclick="deleteDIalog('<%= kategori.id %>')" class="badge bg-theme-bg-2 text-white text-[12px] mx-1">Delete</a>
+          <a href="#" onclick="showBarcode('<%= kategori.nama %>','<%= kategori.kode_barang %>')" class="badge bg-theme-bg-1 text-white text-[12px] mx-1">Barcode</a>
+          <a href="#" onclick="deleteDIalog( '<%= kategori.id %>')" class="badge bg-theme-bg-2 text-white text-[12px] mx-1">Delete</a>
+
         </td>
       </tr>
     <% }) %>
@@ -377,6 +390,21 @@
             <button type="submit" class="btn btn-success">Tambahkan</button>
           </div>
         </form>
+      `,
+      buttons: [] // Hapus tombol OK/CANCEL default
+    });
+  }
+
+  function showBarcode(nama_barang, kode_barang){
+      xdialog.open({
+      title: `Barcode ${nama_barang}`,
+      body: `
+        <div>
+          <img src="/barcode/${kode_barang}.png" />  
+        </div>
+        <div class="flex justify-center items-center pt-5">
+          <a href="/barcode/${kode_barang}.png" class="btn btn-success">Download</a>  
+        </div>
       `,
       buttons: [] // Hapus tombol OK/CANCEL default
     });

@@ -1,4 +1,5 @@
 import { database } from "../app/database.js";
+import { PageError } from "../errors/response.error.js";
 import { formatRupiah } from "../utils/etc.js";
 import { Response } from "../utils/response.template.js";
 import { validation } from "../validations/validation.js";
@@ -221,4 +222,116 @@ async function barangMasuk(request) {
   );
 }
 
-export default { daftar, login, kategoriBarang, barang, barangMasuk };
+async function otpVerification(request) {
+  const result = await validation(viewValidation.otpVerification, request);
+  const user = await database.pengguna.findUnique({
+    where: {
+      id: result.id,
+    },
+  });
+  if (!user) throw new PageError(400, "Akun anda dikunci !");
+  if (user.otp == null) throw new PageError(400, "Session Expired");
+  return new Response(200, "berhasil response", result, "otp", false);
+}
+
+async function home(request) {
+  const result = await validation(viewValidation.home, request);
+
+  const user = await database.pengguna.findUnique({
+    where: result,
+  });
+  const total_user = await database.pengguna.count();
+  const total_barang = await database.barang.count();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set ke awal hari
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1); // Besok untuk batas akhir
+  const total_barang_masuk = await database.stokMasuk.count({
+    where: {
+      created_at: {
+        gte: today,
+        lt: tomorrow,
+      },
+    },
+  });
+  return new Response(
+    200,
+    "berhasil response",
+    {
+      user: user,
+      total_user: total_user,
+      total_barang: total_barang,
+      total_barang_masuk: total_barang_masuk,
+    },
+    "home",
+    false
+  );
+}
+
+async function pengguna(request) {
+  const result = await validation(viewValidation.pengguna, request);
+  const count = await database.pengguna.count({
+    where: {
+      nama: {
+        contains: result?.q,
+      },
+    },
+  });
+  let penggunas = {
+    data: await database.pengguna.findMany({
+      where: result?.q
+        ? {
+            OR: [
+              {
+                nama: {
+                  contains: result?.q || undefined,
+                },
+              },
+              {
+                username: {
+                  contains: result?.q || undefined,
+                },
+              },
+              {
+                email: {
+                  contains: result?.q || undefined,
+                },
+              },
+              {
+                phone: {
+                  contains: result?.q || undefined,
+                },
+              },
+            ],
+          }
+        : undefined,
+      skip: result?.page ? (result.page - 1) * result.take : 0,
+      take: result?.take ? result.take : 10,
+      orderBy: {
+        update_at: "desc",
+      },
+    }),
+    page: result?.page,
+    max_page: Math.ceil(count / result?.take),
+    user: await database.pengguna.findUnique({
+      where: {
+        id: result.id,
+      },
+    }),
+  };
+  console.log(penggunas);
+
+  return new Response(200, "success response", { penggunas }, "user", false);
+}
+
+export default {
+  daftar,
+  login,
+  kategoriBarang,
+  barang,
+  barangMasuk,
+  otpVerification,
+  home,
+  pengguna,
+};

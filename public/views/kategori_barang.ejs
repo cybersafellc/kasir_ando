@@ -99,6 +99,17 @@
             <span class="pc-mtext">Barang Masuk</span>
           </a>
         </li>
+        <% if(kategoriList.user.role == "admin"){%>
+        
+           <li class="pc-item">
+          <a href="/pengguna" class="pc-link">
+            <span class="pc-micon">
+              <i data-feather="user"></i>
+            </span>
+            <span class="pc-mtext">Pengguna</span>
+          </a>
+        </li>
+        <%} %>
       </ul>
     </div>
   </div>

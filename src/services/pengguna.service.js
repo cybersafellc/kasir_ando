@@ -6,6 +6,8 @@ import { Response } from "../utils/response.template.js";
 import bcrypt from "bcrypt";
 const roleNya = ["admin", "user"];
 import Jwt from "jsonwebtoken";
+import { generateOTP, sentOtpMail } from "../utils/etc.js";
+import { logger } from "../app/logging.js";
 
 async function create(request) {
   const result = await validation(penggunaValidation.create, request);
@@ -62,14 +64,90 @@ async function auth(request) {
   if (!user || !(await bcrypt.compare(result.password, user.password))) {
     throw new ApiError(400, "username atau password salah!");
   }
-  const access_token = await Jwt.sign(
+  const otp = generateOTP();
+  await database.pengguna.update({
+    data: {
+      otp: otp,
+    },
+    where: {
+      id: user.id,
+    },
+  });
+  sentOtpMail({
+    otp: otp,
+    username: user.username,
+    email: user.email,
+    nama: user.nama,
+  })
+    .then((ress) => {
+      logger.info("berhasil mengirim email OTP ke " + user.email);
+    })
+    .catch((err) => {
+      logger.error(err.message);
+    });
+  const token_2fa = await Jwt.sign(
     { id: user.id, role: user.role },
+    process.env.TWOFA_SECRET,
+    {
+      expiresIn: "5m",
+    }
+  );
+  setTimeout(async () => {
+    await database.pengguna.update({
+      data: {
+        otp: null,
+      },
+      where: {
+        id: user.id,
+      },
+    });
+  }, 300000);
+  return new Response(
+    200,
+    "Usernam dan Password Benar !",
+    { token_2fa },
+    null,
+    false
+  );
+}
+
+async function otpVerification(request) {
+  console.log(request);
+  const result = await validation(penggunaValidation.otpVerification, request);
+  const user = await database.pengguna.findUnique({
+    where: {
+      id: result.id,
+      otp: result.otp,
+    },
+  });
+  if (!user) throw new ApiError(400, "Otp tidak valid !");
+
+  await database.pengguna.update({
+    data: {
+      otp: null,
+    },
+    where: {
+      id: user.id,
+    },
+  });
+
+  const access_token = Jwt.sign(
+    {
+      id: user.id,
+      role: user.role,
+    },
     process.env.JWT_SECRET,
     {
       expiresIn: "8h",
     }
   );
-  return new Response(200, "login berhasil", { access_token }, null, false);
+  return new Response(
+    200,
+    "berhasil verifikasi otp",
+    { access_token: access_token },
+    null,
+    false
+  );
 }
 
-export default { create, auth };
+export default { create, auth, otpVerification };
